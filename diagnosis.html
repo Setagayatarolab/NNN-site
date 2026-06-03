@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ロックオン診断 | NNNロックオン診断</title>
+  <meta name="description" content="8つの質問でNNNからのロックオン度を診断します。">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="assets/favicon/favicon.svg" type="image/svg+xml">
+  <link rel="shortcut icon" href="assets/favicon/favicon.ico">
+  <link rel="icon" href="assets/favicon/favicon-32x32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="assets/favicon/favicon-16x16.png" sizes="16x16" type="image/png">
+  <link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="assets/favicon/site.webmanifest">
+</head>
+<body class="diagnosis-page">
+  <header class="site-header">
+    <a class="site-logo" href="index.html" aria-label="NNNロックオン診断 ホーム">
+      <img class="site-logo-main" src="assets/images/common/nnn-logo.svg" alt="NNNロックオン診断">
+    </a>
+    <button class="nav-toggle" type="button" aria-label="メニューを開閉" aria-expanded="false">☰</button>
+    <nav class="site-nav" aria-label="メインナビゲーション">
+      <a href="diagnosis.html" aria-current="page">診断</a>
+      <a href="appraise.html">派遣猫鑑定</a>
+      <a href="membership.html">会員証メーカー</a>
+      <a href="about.html">NNNとは</a>
+      <a href="report.html">監視報告書</a>
+      <a href="notice.html">派遣候補通知</a>
+    </nav>
+  </header>
+
+  <main class="diagnosis-main">
+    <section class="diagnosis-hero">
+      <div class="diagnosis-hero-art" aria-hidden="true"></div>
+      <div class="diagnosis-stamp" aria-hidden="true">TOP SECRET</div>
+      <img class="diagnosis-peek" src="images/peek-cat.png" alt="" aria-hidden="true">
+      <div class="diagnosis-hero-copy">
+        <p class="eyebrow">LOCK-ON CHECK</p>
+        <h1>ロックオン診断</h1>
+        <p class="lead">該当する項目にチェックしてください。猫の視線は、思ったより正確です。</p>
+      </div>
+    </section>
+
+    <section class="diagnosis-console">
+      <div class="console-title">
+        <span>✦ 🐾</span>
+        <h2>MISSION CHECKLIST</h2>
+        <span>🐾 ✦</span>
+      </div>
+      <form id="diagnosisForm" class="check-list mission-checklist">
+        <label><input type="checkbox" name="sign"><span class="mission-no">MISSION <strong>01</strong></span><span class="mission-text">最近、道端の猫とよく目が合う</span></label>
+        <label><input type="checkbox" name="sign"><span class="mission-no">MISSION <strong>02</strong></span><span class="mission-text">猫動画を見始めると止まらない</span></label>
+        <label><input type="checkbox" name="sign"><span class="mission-no">MISSION <strong>03</strong></span><span class="mission-text">猫に話しかけるのが自然になっている</span></label>
+        <label><input type="checkbox" name="sign"><span class="mission-no">MISSION <strong>04</strong></span><span class="mission-text">飼う予定はないのに猫用品を見てしまう</span></label>
+        <label><input type="checkbox" name="sign"><span class="mission-no">MISSION <strong>05</strong></span><span class="mission-text">ベランダや玄関に猫が来たことがある</span></label>
+        <label><input type="checkbox" name="sign"><span class="mission-no">MISSION <strong>06</strong></span><span class="mission-text">猫の写真フォルダが増えすぎている</span></label>
+        <label><input type="checkbox" name="sign"><span class="mission-no">MISSION <strong>07</strong></span><span class="mission-text">猫に生活を支配されても少しうれしい</span></label>
+        <label><input type="checkbox" name="sign"><span class="mission-no">MISSION <strong>08</strong></span><span class="mission-text">自分はNNNに見られている気がする</span></label>
+        <div class="diagnosis-action">
+          <button class="button primary glow diagnosis-submit" type="submit">
+            <span>監視結果を確認</span>
+            <small>CHECK REPORT</small>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section id="diagnosisResult" class="result-card diagnosis-result hidden" aria-live="polite"></section>
+  </main>
+
+  <footer class="site-footer">
+    <p>診断結果は猫好き同士の会話のきっかけとしてお楽しみください。</p>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

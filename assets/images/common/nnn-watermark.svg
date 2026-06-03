@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" aria-hidden="true">
+  <g fill="none" stroke="#f0c86a" stroke-linecap="round" stroke-linejoin="round" opacity=".9">
+    <circle cx="128" cy="128" r="102" stroke-width="5"/>
+    <circle cx="128" cy="128" r="78" stroke-width="2" opacity=".55"/>
+    <path d="M74 92 54 50l48 25M154 75l48-25-20 42" stroke-width="7"/>
+    <path d="M60 130c24-28 48-42 68-42s44 14 68 42c-24 28-48 42-68 42s-44-14-68-42Z" stroke-width="5"/>
+    <path d="M92 130c14-12 23-18 36-18s22 6 36 18c-14 12-23 18-36 18s-22-6-36-18Z" stroke-width="4"/>
+    <path d="M128 108v40M108 130h40" stroke-width="4"/>
+  </g>
+  <text x="128" y="214" fill="#f0c86a" opacity=".9" font-family="Georgia, 'Times New Roman', serif" font-size="27" font-weight="700" letter-spacing="8" text-anchor="middle">NNN</text>
+</svg>

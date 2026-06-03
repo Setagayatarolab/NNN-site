@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>監視報告書 | NNNロックオン診断</title>
+  <meta name="description" content="NNN観察班による猫好き傾向の極秘監視報告書をランダム表示します。">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="assets/favicon/favicon.svg" type="image/svg+xml">
+  <link rel="shortcut icon" href="assets/favicon/favicon.ico">
+  <link rel="icon" href="assets/favicon/favicon-32x32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="assets/favicon/favicon-16x16.png" sizes="16x16" type="image/png">
+  <link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="assets/favicon/site.webmanifest">
+</head>
+<body class="reports-page">
+  <header class="site-header">
+    <a class="site-logo" href="index.html" aria-label="NNNロックオン診断 ホーム">
+      <img class="site-logo-main" src="assets/images/common/nnn-logo.svg" alt="NNNロックオン診断">
+    </a>
+    <button class="nav-toggle" type="button" aria-label="メニューを開閉" aria-expanded="false">☰</button>
+    <nav class="site-nav" aria-label="メインナビゲーション">
+      <a href="diagnosis.html">診断</a>
+      <a href="appraise.html">派遣猫鑑定</a>
+      <a href="membership.html">会員証メーカー</a>
+      <a href="about.html">NNNとは</a>
+      <a href="reports.html" aria-current="page">監視報告書</a>
+      <a href="notice.html">派遣候補通知</a>
+    </nav>
+  </header>
+
+  <main class="reports-main">
+    <section class="reports-hero">
+      <div class="reports-hero-orbit" aria-hidden="true"></div>
+      <p class="eyebrow">SURVEILLANCE REPORT</p>
+      <h1>監視報告書</h1>
+      <p class="lead">以下はNNN観察班による、猫好き傾向のサンプル報告です。</p>
+      <div class="reports-hero-meta" aria-label="報告書メタ情報">
+        <span>CLASSIFIED</span>
+        <span>NNN INTERNAL DOSSIER</span>
+        <span>RANDOM 4 / 16</span>
+      </div>
+    </section>
+
+    <section class="surveillance-section" aria-labelledby="surveillanceTitle">
+      <div class="surveillance-heading">
+        <div>
+          <p class="eyebrow">LATEST OBSERVATION</p>
+          <h2 id="surveillanceTitle">最近の監視報告</h2>
+        </div>
+        <p id="observationComment" class="observation-comment"></p>
+      </div>
+
+      <div id="surveillanceGrid" class="surveillance-grid" aria-live="polite"></div>
+      <noscript>
+        <p class="reports-noscript">監視報告の表示にはJavaScriptが必要です。</p>
+      </noscript>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p id="reportFooterComment" class="report-footer-comment"></p>
+  </footer>
+
+  <script src="js/script.js"></script>
+  <script src="js/reports.js"></script>
+</body>
+</html>

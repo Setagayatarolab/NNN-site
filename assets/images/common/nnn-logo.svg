@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 128" role="img" aria-label="NNN ネコ・ネコ・ネットワーク">
+  <defs>
+    <linearGradient id="gold" x1="18" y1="15" x2="252" y2="116">
+      <stop offset="0" stop-color="#fff3b8"/>
+      <stop offset=".48" stop-color="#d2a24a"/>
+      <stop offset="1" stop-color="#fff0a8"/>
+    </linearGradient>
+    <linearGradient id="line" x1="70" y1="24" x2="160" y2="98">
+      <stop offset="0" stop-color="#85e4ff"/>
+      <stop offset=".52" stop-color="#9b7cff"/>
+      <stop offset="1" stop-color="#efc96b"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-30%" width="140%" height="160%">
+      <feGaussianBlur stdDeviation="1.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="520" height="128" rx="20" fill="none"/>
+  <g transform="translate(14 11)">
+    <circle cx="53" cy="53" r="49" fill="#071033" stroke="url(#gold)" stroke-width="4"/>
+    <circle cx="53" cy="53" r="38" fill="none" stroke="#8f7cff" stroke-width="1.5" opacity=".42"/>
+    <path d="M24 42 16 22l25 13M65 35l25-13-8 20" fill="none" stroke="url(#gold)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M20 55c19-19 35-28 53-28s34 9 53 28c-19 19-35 28-53 28s-34-9-53-28Z" transform="translate(-20 0)" fill="#0d1648" stroke="url(#gold)" stroke-width="3" filter="url(#soft)"/>
+    <path d="M34 55c9-8 16-12 23-12s14 4 23 12c-9 8-16 12-23 12s-14-4-23-12Z" fill="none" stroke="url(#line)" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M53 38v34M36 55h34" stroke="#f6d87d" stroke-width="2.6" stroke-linecap="round"/>
+  </g>
+  <text x="132" y="66" fill="#fff0a8" font-family="Georgia, 'Times New Roman', serif" font-size="48" font-weight="700" letter-spacing="7">NNN</text>
+  <text x="135" y="94" fill="#f1d78a" font-family="'Yu Gothic', 'Hiragino Sans', sans-serif" font-size="13" font-weight="700" letter-spacing="3">ネコ・ネコ・ネットワーク</text>
+  <path d="M294 35h150M294 83h190" stroke="url(#gold)" stroke-width="2" stroke-linecap="round" opacity=".68"/>
+  <text x="296" y="65" fill="#95eaff" font-family="Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="3" opacity=".9">NEKO NEKO NETWORK</text>
+</svg>

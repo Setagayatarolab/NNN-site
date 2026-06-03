@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="NNN emblem">
+  <defs>
+    <linearGradient id="gold" x1="40" y1="30" x2="216" y2="224">
+      <stop offset="0" stop-color="#fff3b8"/>
+      <stop offset=".44" stop-color="#d2a24a"/>
+      <stop offset="1" stop-color="#fff0a8"/>
+    </linearGradient>
+    <linearGradient id="violet" x1="74" y1="66" x2="186" y2="188">
+      <stop offset="0" stop-color="#88e8ff"/>
+      <stop offset=".5" stop-color="#9e7cff"/>
+      <stop offset="1" stop-color="#efc96b"/>
+    </linearGradient>
+    <filter id="glow" x="-24%" y="-24%" width="148%" height="148%">
+      <feGaussianBlur stdDeviation="2.4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <circle cx="128" cy="128" r="112" fill="#071033" stroke="url(#gold)" stroke-width="6"/>
+  <circle cx="128" cy="128" r="92" fill="none" stroke="#8f7cff" stroke-width="2" opacity=".42"/>
+  <circle cx="128" cy="128" r="70" fill="none" stroke="#f0c86a" stroke-width="1.5" opacity=".48" stroke-dasharray="4 10"/>
+  <path d="M72 92 52 52l48 22M156 74l48-22-20 40" fill="none" stroke="url(#gold)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M60 130c24-28 48-42 68-42s44 14 68 42c-24 28-48 42-68 42s-44-14-68-42Z" fill="#0d1648" stroke="url(#gold)" stroke-width="5" filter="url(#glow)"/>
+  <path d="M88 130c16-15 28-22 40-22s24 7 40 22c-16 15-28 22-40 22s-24-7-40-22Z" fill="none" stroke="url(#violet)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M128 104v56M104 130h56" stroke="#f5d97a" stroke-width="4" stroke-linecap="round" opacity=".9"/>
+  <path d="M83 186h90" stroke="url(#gold)" stroke-width="4" stroke-linecap="round"/>
+  <text x="128" y="214" fill="#fff0a8" font-family="Georgia, 'Times New Roman', serif" font-size="27" font-weight="700" letter-spacing="8" text-anchor="middle">NNN</text>
+</svg>

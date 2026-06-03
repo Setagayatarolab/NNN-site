@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NNN派遣候補通知メーカー | NNNロックオン診断</title>
+  <meta name="description" content="名前を入力して、NNN猫派遣候補地としての極秘通知書を発行できます。">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="assets/favicon/favicon.svg" type="image/svg+xml">
+  <link rel="shortcut icon" href="assets/favicon/favicon.ico">
+  <link rel="icon" href="assets/favicon/favicon-32x32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="assets/favicon/favicon-16x16.png" sizes="16x16" type="image/png">
+  <link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="assets/favicon/site.webmanifest">
+</head>
+<body class="notice-page">
+  <header class="site-header">
+    <a class="site-logo" href="index.html" aria-label="NNNロックオン診断 ホーム">
+      <img class="site-logo-main" src="assets/images/common/nnn-logo.svg" alt="NNNロックオン診断">
+    </a>
+    <button class="nav-toggle" type="button" aria-label="メニューを開閉" aria-expanded="false">☰</button>
+    <nav class="site-nav" aria-label="メインナビゲーション">
+      <a href="diagnosis.html">診断</a>
+      <a href="appraise.html">派遣猫鑑定</a>
+      <a href="membership.html">会員証メーカー</a>
+      <a href="about.html">NNNとは</a>
+      <a href="report.html">監視報告書</a>
+      <a href="notice.html" aria-current="page">派遣候補通知</a>
+    </nav>
+  </header>
+
+  <main class="notice-main">
+    <section class="notice-hero">
+      <div class="notice-hero-seal" aria-hidden="true">TOP SECRET</div>
+      <div class="notice-hero-orbit" aria-hidden="true"></div>
+      <p class="eyebrow">DISPATCH CANDIDATE NOTICE</p>
+      <h1>NNN派遣候補通知メーカー</h1>
+      <p class="lead">あなたのお宅は、NNN猫派遣候補地として内部観測網に登録された可能性があります。<br>下記に対象者名を入力し、極秘通知書を確認してください。</p>
+    </section>
+
+    <section class="notice-workbench" aria-label="極秘通知書メーカー">
+      <form id="dispatchNoticeForm" class="dispatch-form" novalidate>
+        <div class="dispatch-form-heading">
+          <p class="eyebrow">NNN FORM 22-CAT</p>
+          <h2>候補地情報入力</h2>
+          <p>対象者名のみで発行できます。任意項目を入れると、通知書の雰囲気が少しだけ濃くなります。</p>
+        </div>
+
+        <label class="field-block" for="dispatchName">
+          <span>対象者名 <b>必須</b></span>
+          <input id="dispatchName" name="name" type="text" maxlength="24" placeholder="例）猫田ニャオ" autocomplete="name" required>
+        </label>
+
+        <div class="dispatch-optional-grid">
+          <label class="field-block" for="dispatchCode">
+            <span>候補地識別コード <small>任意</small></span>
+            <input id="dispatchCode" name="code" type="text" maxlength="18" placeholder="例）MOON-07">
+          </label>
+
+          <label class="field-block" for="dispatchWatchTime">
+            <span>希望観測時間帯 <small>任意</small></span>
+            <select id="dispatchWatchTime" name="watchTime">
+              <option value="">指定なし</option>
+              <option>深夜</option>
+              <option>早朝</option>
+              <option>夕暮れ</option>
+              <option>指定なし</option>
+            </select>
+          </label>
+
+          <label class="field-block" for="dispatchPreference">
+            <span>好きな猫傾向 <small>任意</small></span>
+            <select id="dispatchPreference" name="preference">
+              <option value="">未選択</option>
+              <option>黒猫</option>
+              <option>茶トラ</option>
+              <option>ハチワレ</option>
+              <option>白猫</option>
+              <option>長毛</option>
+              <option>子猫</option>
+              <option>おまかせ</option>
+            </select>
+          </label>
+        </div>
+
+        <p id="dispatchFormError" class="dispatch-error" role="alert"></p>
+
+        <button class="button primary glow dispatch-submit" type="submit">
+          <span>極秘通知書を発行する</span>
+          <small>ISSUE NOTICE</small>
+        </button>
+      </form>
+
+      <section id="dispatchNoticeResult" class="dispatch-result hidden" aria-live="polite"></section>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>通知書を受け取ったら、近くの猫に心の中で報告しましょう。</p>
+  </footer>
+
+  <script src="js/script.js"></script>
+  <script src="js/notice.js"></script>
+</body>
+</html>

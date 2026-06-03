@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NNN派遣猫鑑定 | NNNロックオン診断</title>
+  <meta name="description" content="猫写真と行動情報から、NNNから派遣された可能性を極秘鑑定します。">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="assets/favicon/favicon.svg" type="image/svg+xml">
+  <link rel="shortcut icon" href="assets/favicon/favicon.ico">
+  <link rel="icon" href="assets/favicon/favicon-32x32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="assets/favicon/favicon-16x16.png" sizes="16x16" type="image/png">
+  <link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="assets/favicon/site.webmanifest">
+</head>
+<body class="nnn-tool-page appraise-page">
+  <header class="site-header">
+    <a class="site-logo" href="index.html" aria-label="NNNロックオン診断 ホーム">
+      <img class="site-logo-main" src="assets/images/common/nnn-logo.svg" alt="NNNロックオン診断">
+    </a>
+    <button class="nav-toggle" type="button" aria-label="メニューを開閉" aria-expanded="false">☰</button>
+    <nav class="site-nav" aria-label="メインナビゲーション">
+      <a href="appraise.html" aria-current="page">派遣猫鑑定</a>
+      <a href="membership.html">会員証メーカー</a>
+      <a href="diagnosis.html">診断</a>
+      <a href="report.html">監視報告書</a>
+      <a href="notice.html">派遣候補通知</a>
+    </nav>
+  </header>
+
+  <main class="tool-main">
+    <section class="tool-hero">
+      <div class="tool-hero-stamp" aria-hidden="true">TOP SECRET</div>
+      <img class="tool-bg-cat" src="assets/images/notice/bg-cat-01.webp" alt="" aria-hidden="true">
+      <p class="eyebrow">NNN DISPATCH PROBABILITY CHECK</p>
+      <h1>NNN派遣猫鑑定</h1>
+      <p class="lead">家に来た経緯や行動から、あなたの猫がNNNから派遣された可能性を判定します。写真といくつかの情報をもとに、派遣確率を極秘算出します。</p>
+    </section>
+
+    <section class="tool-console appraise-console">
+      <form id="appraiseForm" class="appraise-form" novalidate>
+        <div class="tool-panel-heading">
+          <p class="eyebrow">NNN INTERNAL APPRAISAL</p>
+          <h2>鑑定資料入力</h2>
+          <p>猫写真と日常の不可解な行動を提出してください。NNN観測班がそれっぽく判定します。</p>
+        </div>
+
+        <label class="upload-zone" for="catPhoto">
+          <input id="catPhoto" name="photo" type="file" accept="image/*" required>
+          <span class="upload-copy">
+            <strong>猫写真をアップロード</strong>
+            <small>クリックして極秘資料に登録</small>
+          </span>
+          <img id="catPhotoPreview" class="upload-preview hidden" alt="アップロードした猫写真のプレビュー">
+        </label>
+
+        <div class="tool-field-grid">
+          <label class="field-block" for="catName">
+            <span>猫の名前 <b>必須</b></span>
+            <input id="catName" type="text" maxlength="24" placeholder="例）ミケ" required>
+          </label>
+          <label class="field-block" for="catAge">
+            <span>猫の年齢 <b>必須</b></span>
+            <input id="catAge" type="number" min="0" max="30" step="0.1" placeholder="例）3" required>
+          </label>
+        </div>
+
+        <div class="appraise-questions">
+          <label class="field-block" for="meetPlace">
+            <span>どこで出会ったか</span>
+            <select id="meetPlace">
+              <option value="10" data-route="shelter">保護施設</option>
+              <option value="8" data-route="friend">知人宅</option>
+              <option value="15" data-route="street">道端</option>
+              <option value="4" data-route="petshop">ペットショップ</option>
+              <option value="4" data-route="breeder">ブリーダー</option>
+              <option value="15" data-route="balcony">ベランダに来た</option>
+              <option value="20" data-route="entrance">玄関前に現れた</option>
+              <option value="20" data-route="appeared">気づいたらいた</option>
+            </select>
+          </label>
+
+          <label class="field-block" for="firstMood">
+            <span>最初に来たときの様子</span>
+            <select id="firstMood">
+              <option value="4">警戒していた</option>
+              <option value="10">すぐなついた</option>
+              <option value="14">ずっと見てきた</option>
+              <option value="20">当然のように入ってきた</option>
+            </select>
+          </label>
+
+          <fieldset class="check-block">
+            <legend>普段の行動</legend>
+            <label><input type="checkbox" name="behavior" value="10"> 夜中に走り回る</label>
+            <label><input type="checkbox" name="behavior" value="10"> 窓辺に長時間いる</label>
+            <label><input type="checkbox" name="behavior" value="15"> じっと見てくる</label>
+            <label><input type="checkbox" name="behavior" value="12"> いつの間にかそばにいる</label>
+            <label><input type="checkbox" name="behavior" value="14"> 玄関を監視する</label>
+          </fieldset>
+
+          <label class="field-block" for="humanAttitude">
+            <span>人間への態度</span>
+            <select id="humanAttitude">
+              <option value="6">ツンデレ</option>
+              <option value="8">べったり</option>
+              <option value="12">食事だけ要求</option>
+              <option value="15">上から見てくる</option>
+              <option value="18">監視員っぽい</option>
+            </select>
+          </label>
+        </div>
+
+        <p id="appraiseError" class="dispatch-error" role="alert"></p>
+        <button id="appraiseSubmit" class="button primary glow tool-submit" type="submit">
+          <span>NNN派遣確率を算出する</span>
+          <small>START APPRAISAL</small>
+        </button>
+      </form>
+
+      <section id="appraiseResult" class="appraise-result hidden" aria-live="polite"></section>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>判定結果に異議がある場合は、猫に直接お問い合わせください。たぶん無視されます。</p>
+  </footer>
+
+  <script src="js/script.js"></script>
+  <script src="js/appraise.js"></script>
+</body>
+</html>
