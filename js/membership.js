@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
   "use strict";
 
   const form = document.getElementById("memberForm");
@@ -9,7 +9,7 @@
   const errorMessage = document.getElementById("memberError");
   const resultArea = document.getElementById("memberCardResult");
 
-  const teams = ["深夜巡回班", "窓辺観測班", "玄関監視局", "月光潜入班", "肉球通信課", "黒猫特務班"];
+  const teams = ["深夜巡回班", "窓辺監視班", "屋上観測班", "月光追尾班", "肉球通信課", "黒猫特務班"];
   const codeNames = ["MOON-07", "SHADOW-12", "SOFTPAW-4", "WATCHER-9", "WINDOW-03", "ROOF-21", "LUNA-07", "NOIR-11", "WATCHER-09", "MOON-04"];
   const cardRanks = ["要観察対象", "派遣候補", "準会員級", "極秘認定", "監視協力猫"];
   const approvalSeals = ["VERIFIED", "APPROVED", "NNN承認", "極秘認証"];
@@ -84,7 +84,7 @@
 
   function getCertificationLabel(probability) {
     if (probability >= 90) return "正式派遣級 " + probability + "%";
-    if (probability >= 75) return "派遣濃厚 " + probability + "%";
+    if (probability >= 75) return "NNN認定 " + probability + "%";
     if (probability >= 50) return "派遣候補 " + probability + "%";
     return "派遣疑惑 " + probability + "%";
   }
@@ -108,20 +108,35 @@
   }
 
   function renderMemberCard(data) {
-    const photo = data.photo ? '<img src="' + data.photo + '" alt="' + escapeHtml(data.catName) + 'の会員証写真">' : '<span class="member-photo-placeholder">NO PHOTO</span>';
+    const photo = data.photo
+      ? '<img src="' + data.photo + '" alt="' + escapeHtml(data.catName) + 'の会員証写真">'
+      : '<span class="member-photo-placeholder">NO PHOTO</span>';
     const serialCode = getCardSerial(data.memberId, data.codeName);
     resultArea.className = "member-card-result";
     resultArea.innerHTML =
-      '<article class="nnn-member-card">' +
+      '<article id="memberCardPreview" class="nnn-member-card">' +
         '<div class="member-card-pattern" aria-hidden="true"></div>' +
-        '<img class="member-card-watermark" src="assets/images/common/nnn-watermark.svg" alt="" aria-hidden="true">' +
+        '<div class="member-card-watermark member-card-watermark-text" aria-hidden="true">NNN</div>' +
         '<div class="member-card-head">' +
-          '<img class="member-logo" src="assets/images/common/nnn-emblem.svg" alt="NNN">' +
-          '<div><p class="eyebrow">NEKO NEKO NETWORK MEMBER</p><h2>極秘会員証</h2><small>INTERNAL MEMBER DOSSIER</small></div>' +
+          '<div class="member-logo member-logo-mark" aria-label="NNN"><span>NNN</span></div>' +
+          '<div><p class="eyebrow">NEKO NETWORK MEMBER</p><h2>極秘会員証</h2><small>INTERNAL MEMBER DOSSIER</small></div>' +
           '<span class="member-stamp">' + escapeHtml(data.approvalSeal) + '</span>' +
         "</div>" +
         '<div class="member-card-main">' +
-          '<div class="member-photo">' + photo + '<span class="photo-auth">PHOTO VERIFIED</span></div>' +
+          '<div class="member-visual">' +
+            '<div class="member-photo">' + photo + '<span class="photo-auth">PHOTO VERIFIED</span></div>' +
+            '<div class="member-auth-strip" aria-label="NNN認証情報">' +
+              '<div class="member-auth-code">' +
+                '<span>NNN-ID CODE</span>' +
+                '<strong>' + escapeHtml(data.memberId) + " / " + escapeHtml(data.codeName) + '</strong>' +
+              '</div>' +
+              '<div class="member-barcode" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>' +
+              '<div class="member-verified-seal">' +
+                '<span>VERIFIED</span>' +
+                '<strong>BY NNN</strong>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
           '<dl class="member-info">' +
             "<div><dt>猫名</dt><dd>" + escapeHtml(data.catName) + "</dd></div>" +
             "<div><dt>年齢</dt><dd>" + escapeHtml(data.catAge) + "歳</dd></div>" +
@@ -137,11 +152,14 @@
           '<span>' + escapeHtml(serialCode) + '</span>' +
           '<strong>CLASSIFIED CAT ID</strong>' +
         '</div>' +
-        '<div class="dispatch-actions">' +
-          '<button class="button secondary" type="button" id="regenerateMemberCard">再生成する</button>' +
-          '<a class="button primary" target="_blank" rel="noopener" href="' + buildShareUrl(data) + '">Xでシェア</a>' +
-        "</div>" +
-      "</article>";
+      "</article>" +
+      '<div class="dispatch-actions">' +
+        '<button class="button secondary" type="button" id="regenerateMemberCard">再生成する</button>' +
+        '<button class="button secondary save-image-button" type="button" id="saveMemberCardImage">会員証画像を保存</button>' +
+        '<a class="button primary" target="_blank" rel="noopener" href="' + buildShareUrl() + '">Xでシェア</a>' +
+      "</div>" +
+      '<p class="share-guidance">画像を保存してからX投稿に添付してください</p>' +
+      '<p id="memberCaptureStatus" class="capture-status" role="status" aria-live="polite"></p>';
     resultArea.scrollIntoView({ behavior: "smooth", block: "start" });
 
     const regenerateButton = document.getElementById("regenerateMemberCard");
@@ -150,10 +168,45 @@
         renderMemberCard(generateMemberCard(currentPhoto));
       });
     }
+
+    const saveButton = document.getElementById("saveMemberCardImage");
+    if (saveButton) {
+      saveButton.addEventListener("click", function () {
+        saveMemberCardImage(data);
+      });
+    }
   }
 
-  function buildShareUrl(data) {
-    const text = encodeURIComponent("NNN会員証を発行しました。コードネーム：" + data.codeName + " / " + data.certification + " #NNN会員証");
+  function saveMemberCardImage(data) {
+    const card = resultArea.querySelector(".nnn-member-card");
+    const status = document.getElementById("memberCaptureStatus");
+    if (!window.NNNCapture || !card) {
+      showCaptureStatus(status, "画像保存の準備に失敗しました。公開ページ上で開いているか確認してください。", true);
+      return;
+    }
+
+    errorMessage.textContent = "";
+    showCaptureStatus(status, "会員証画像を生成しています。少しだけお待ちください。", false);
+    window.NNNCapture.downloadElementAsPng(card, "nnn-member-card-" + data.memberId + ".png", { pixelRatio: 2 }).then(function () {
+      showCaptureStatus(status, "会員証画像を保存しました。X投稿時に添付してください。", false);
+    }).catch(function (error) {
+      console.error(error);
+      showCaptureStatus(status, "画像保存に失敗しました。公開ページ上で開いているか、画像が正しく読み込まれているか確認してください。", true);
+    });
+  }
+
+  function showCaptureStatus(element, message, isError) {
+    if (!element) {
+      errorMessage.textContent = message;
+      return;
+    }
+
+    element.textContent = message;
+    element.classList.toggle("is-error", Boolean(isError));
+  }
+
+  function buildShareUrl() {
+    const text = encodeURIComponent("NNN極秘会員証を発行しました。あなたの猫は監視対象かもしれません。 #NNN #猫 #会員証メーカー");
     const url = encodeURIComponent(window.location.href.split("#")[0]);
     return "https://twitter.com/intent/tweet?text=" + text + "&url=" + url;
   }

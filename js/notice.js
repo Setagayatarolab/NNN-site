@@ -117,7 +117,7 @@
 
   function buildShareUrl(data) {
     const text = encodeURIComponent(
-      "NNNから猫派遣候補通知が届きました。どうやら我が家は観測済みらしいです。派遣候補ランク：" + data.rank + " #NNN派遣候補通知"
+      "NNN派遣候補通知を発行しました。お宅の猫はすでに監視任務中かもしれません。 #NNN #猫 #派遣候補通知"
     );
     const url = encodeURIComponent(window.location.href.split("#")[0]);
     return "https://twitter.com/intent/tweet?text=" + text + "&url=" + url;
@@ -128,7 +128,7 @@
     resultArea.innerHTML =
       '<article class="dispatch-document">' +
         '<div class="dispatch-document-bg" aria-hidden="true"></div>' +
-        '<img class="dispatch-bg-cat" src="assets/images/notice/bg-cat-01.webp" alt="" aria-hidden="true">' +
+        '<div class="dispatch-bg-cat dispatch-bg-cat-symbol" aria-hidden="true">NNN</div>' +
         '<div class="dispatch-doc-header">' +
           '<div>' +
             '<p class="eyebrow">NNN INTERNAL / CLASSIFIED</p>' +
@@ -165,11 +165,14 @@
           "<p>" + escapeHtml(data.comment) + "</p>" +
         "</div>" +
         '<div class="dispatch-seal" aria-label="' + escapeHtml(data.seal) + '">' + escapeHtml(data.seal) + "</div>" +
-        '<div class="dispatch-actions">' +
-          '<button class="button secondary" type="button" id="reissueNoticeButton">再発行する</button>' +
-          '<a class="button primary" target="_blank" rel="noopener" href="' + buildShareUrl(data) + '">Xでシェア</a>' +
-        "</div>" +
-      "</article>";
+      "</article>" +
+      '<div class="dispatch-actions">' +
+        '<button class="button secondary" type="button" id="reissueNoticeButton">再発行する</button>' +
+        '<button class="button secondary save-image-button" type="button" id="saveNoticeImage">通知画像を保存</button>' +
+        '<a class="button primary" target="_blank" rel="noopener" href="' + buildShareUrl(data) + '">Xでシェア</a>' +
+      "</div>" +
+      '<p class="share-guidance">画像を保存してからX投稿に添付してください</p>' +
+      '<p id="noticeCaptureStatus" class="capture-status" role="status" aria-live="polite"></p>';
 
     resultArea.scrollIntoView({ behavior: "smooth", block: "start" });
 
@@ -179,6 +182,41 @@
         renderNotice(generateNoticeData(data.name));
       });
     }
+
+    const saveButton = document.getElementById("saveNoticeImage");
+    if (saveButton) {
+      saveButton.addEventListener("click", function () {
+        saveNoticeImage(data);
+      });
+    }
+  }
+
+  function saveNoticeImage(data) {
+    const notice = resultArea.querySelector(".dispatch-document");
+    const status = document.getElementById("noticeCaptureStatus");
+    if (!window.NNNCapture || !notice) {
+      showCaptureStatus(status, "画像保存の準備に失敗しました。公開ページ上で開いているか確認してください。", true);
+      return;
+    }
+
+    errorMessage.textContent = "";
+    showCaptureStatus(status, "通知画像を生成しています。少しだけお待ちください。", false);
+    window.NNNCapture.downloadElementAsPng(notice, "nnn-dispatch-notice-" + data.observationNumber + ".png", { pixelRatio: 2 }).then(function () {
+      showCaptureStatus(status, "通知画像を保存しました。X投稿時に添付してください。", false);
+    }).catch(function (error) {
+      console.error(error);
+      showCaptureStatus(status, "画像保存に失敗しました。公開ページ上で開いているか、画像が正しく読み込まれているか確認してください。", true);
+    });
+  }
+
+  function showCaptureStatus(element, message, isError) {
+    if (!element) {
+      errorMessage.textContent = message;
+      return;
+    }
+
+    element.textContent = message;
+    element.classList.toggle("is-error", Boolean(isError));
   }
 
   function escapeHtml(value) {
