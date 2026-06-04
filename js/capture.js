@@ -122,6 +122,7 @@
     await inlineImages(element, clone);
 
     wrapper.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+    wrapper.className = document.body.className || "";
     wrapper.style.width = width + "px";
     wrapper.style.minHeight = height + "px";
     wrapper.innerHTML = "<style>" + collectPageStyles() + "</style>";

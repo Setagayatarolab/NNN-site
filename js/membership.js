@@ -178,7 +178,7 @@
   }
 
   function saveMemberCardImage(data) {
-    const card = resultArea.querySelector(".nnn-member-card");
+    const card = document.getElementById("memberCardPreview");
     const status = document.getElementById("memberCaptureStatus");
     if (!window.NNNCapture || !card) {
       showCaptureStatus(status, "画像保存の準備に失敗しました。公開ページ上で開いているか確認してください。", true);
