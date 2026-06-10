@@ -5205,6 +5205,139 @@ input[type="checkbox"] {
   font-weight: 700;
 }
 
+/* Home mission cards: deliberate mobile layout instead of compressed desktop grid */
+@media (max-width: 768px) {
+  .home-page .home-mission-section {
+    width: min(100% - 1rem, 44rem);
+    margin-top: 0.8rem;
+    padding-inline: 0;
+  }
+
+  .home-page .mission-grid {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .home-page .mission-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    gap: 0;
+    min-width: 0;
+    min-height: 0;
+    height: auto;
+    padding: 0.8rem;
+  }
+
+  .home-page .mission-card .card-visual,
+  .home-page .mission-card .mission-code,
+  .home-page .mission-card h3,
+  .home-page .mission-card p,
+  .home-page .mission-card .mission-meta,
+  .home-page .mission-card .mission-action {
+    grid-column: 1;
+  }
+
+  .home-page .mission-card .card-visual {
+    grid-row: 1;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    aspect-ratio: 16 / 9;
+    align-self: auto;
+    margin: 0 0 0.8rem;
+  }
+
+  .home-page .mission-card .mission-code {
+    grid-row: 2;
+    justify-self: start;
+    margin: 0 0 0.55rem;
+  }
+
+  .home-page .mission-card h3 {
+    grid-row: 3;
+    margin: 0 0 0.45rem;
+    font-size: clamp(1.22rem, 5.4vw, 1.5rem);
+    line-height: 1.35;
+  }
+
+  .home-page .mission-card p {
+    grid-row: 4;
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+
+  .home-page .mission-card .mission-meta {
+    grid-row: 5;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    width: 100%;
+    margin: 0.8rem 0 0;
+  }
+
+  .home-page .mission-card .mission-meta div {
+    min-height: 3.2rem;
+    padding: 0.48rem 0.58rem;
+  }
+
+  .home-page .mission-card .mission-meta dt {
+    font-size: 0.68rem;
+  }
+
+  .home-page .mission-card .mission-meta dd {
+    margin-top: 0.12rem;
+    font-size: 0.82rem;
+    line-height: 1.35;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .home-page .mission-card .mission-action {
+    grid-row: 6;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    min-height: 2.8rem;
+    margin: 0.8rem 0 0;
+    padding: 0.62rem 0.9rem;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  .home-page .mission-card::after {
+    top: 0.55rem;
+    right: -1.65rem;
+    width: 5.6rem;
+    font-size: 0.62rem;
+  }
+}
+
+@media (max-width: 430px) {
+  .home-page .home-mission-section {
+    width: calc(100% - 0.75rem);
+  }
+
+  .home-page .mission-card {
+    padding: 0.68rem;
+  }
+
+  .home-page .mission-card .card-visual {
+    aspect-ratio: 16 / 10;
+  }
+
+  .home-page .mission-card .mission-meta {
+    gap: 0.4rem;
+  }
+
+  .home-page .mission-card .mission-meta div {
+    min-height: 3rem;
+    padding: 0.42rem 0.48rem;
+  }
+}
+
 .membership-page .tool-submit {
   background:
     linear-gradient(135deg, rgba(244, 217, 146, 0.96), rgba(185, 102, 224, 0.82) 58%, rgba(125, 224, 255, 0.62));
