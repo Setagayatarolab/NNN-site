@@ -17,7 +17,8 @@
     css += [
       "*{box-sizing:border-box;}",
       "body{margin:0;background:#071033;}",
-      ".dispatch-actions,.share-guidance,.capture-status{display:none!important;}"
+      ".dispatch-actions,.share-actions,.share-guidance,.capture-status{display:none!important;}",
+      ".diagnosis-result{animation:none!important;transform:none!important;}"
     ].join("\n");
 
     return css;
@@ -106,7 +107,7 @@
     return URL.createObjectURL(new Blob([svg], { type: "image/svg+xml;charset=utf-8" }));
   }
 
-  async function downloadElementAsPng(element, filename, options) {
+  async function elementToPngBlob(element, options) {
     if (!element) {
       throw new Error("画像化する要素が見つかりません。");
     }
@@ -151,23 +152,29 @@
         throw new Error("画像の生成に失敗しました。");
       }
 
-      const downloadUrl = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-      anchor.href = downloadUrl;
-      anchor.download = sanitizeFilename(filename || "nnn-image.png");
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-
-      window.setTimeout(function () {
-        URL.revokeObjectURL(downloadUrl);
-      }, 1000);
+      return blob;
     } finally {
       URL.revokeObjectURL(svgUrl);
     }
   }
 
+  async function downloadElementAsPng(element, filename, options) {
+    const blob = await elementToPngBlob(element, options);
+    const downloadUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = downloadUrl;
+    anchor.download = sanitizeFilename(filename || "nnn-image.png");
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+
+    window.setTimeout(function () {
+      URL.revokeObjectURL(downloadUrl);
+    }, 1000);
+  }
+
   window.NNNCapture = {
+    elementToPngBlob: elementToPngBlob,
     downloadElementAsPng: downloadElementAsPng,
     sanitizeFilename: sanitizeFilename
   };

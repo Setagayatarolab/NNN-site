@@ -4233,6 +4233,170 @@ input[type="checkbox"] {
   color: rgba(255, 176, 199, 0.95);
 }
 
+body.share-modal-open {
+  overflow: hidden;
+}
+
+.nnn-share-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.nnn-share-modal.hidden {
+  display: none;
+}
+
+.nnn-share-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 4, 20, 0.82);
+  backdrop-filter: blur(8px);
+}
+
+.nnn-share-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(34rem, 100%);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border: 1px solid rgba(244, 217, 146, 0.72);
+  border-radius: 0.7rem;
+  color: #fff6dc;
+  background:
+    radial-gradient(circle at 85% 12%, rgba(255, 136, 238, 0.16), transparent 10rem),
+    linear-gradient(145deg, rgba(15, 24, 78, 0.98), rgba(27, 13, 66, 0.98));
+  box-shadow:
+    0 0 0 1px rgba(125, 224, 255, 0.16) inset,
+    0 0 34px rgba(188, 128, 255, 0.28),
+    0 24px 70px rgba(0, 0, 0, 0.56);
+}
+
+.nnn-share-dialog::before {
+  content: "";
+  position: absolute;
+  inset: 0.55rem;
+  border: 1px solid rgba(244, 217, 146, 0.18);
+  pointer-events: none;
+}
+
+.nnn-share-dialog h2 {
+  margin: 0.2rem 0 0.25rem;
+  color: var(--gold-soft);
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: 0.08em;
+}
+
+.nnn-share-dialog h3 {
+  margin: 0 0 1rem;
+  font-size: 1.28rem;
+}
+
+.nnn-share-copy,
+.nnn-share-note {
+  line-height: 1.8;
+}
+
+.nnn-share-note {
+  color: rgba(218, 246, 255, 0.78);
+  font-size: 0.88rem;
+}
+
+.nnn-share-close {
+  position: absolute;
+  z-index: 2;
+  top: 0.65rem;
+  right: 0.7rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid rgba(244, 217, 146, 0.5);
+  border-radius: 50%;
+  color: #fff6dc;
+  background: rgba(5, 8, 30, 0.78);
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.nnn-share-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 1.1rem;
+}
+
+.nnn-share-actions .button {
+  min-width: 0;
+  min-height: 3rem;
+  justify-content: center;
+  text-align: center;
+}
+
+.nnn-share-status {
+  min-height: 1.5rem;
+  margin: 0.8rem 0 0;
+  color: rgba(244, 217, 146, 0.9);
+  font-weight: 800;
+  line-height: 1.6;
+}
+
+.nnn-share-status.is-error {
+  color: #ffbfdc;
+}
+
+.nnn-share-classified {
+  display: block;
+  margin-top: 0.6rem;
+  color: rgba(255, 136, 238, 0.48);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-align: right;
+}
+
+.share-guidance {
+  padding-left: 1.35rem;
+}
+
+.share-guidance::before {
+  content: "i";
+  display: inline-grid;
+  place-items: center;
+  width: 1rem;
+  height: 1rem;
+  margin-left: -1.35rem;
+  margin-right: 0.35rem;
+  border: 1px solid rgba(125, 224, 255, 0.46);
+  border-radius: 50%;
+  color: rgba(125, 224, 255, 0.9);
+  font-size: 0.66rem;
+}
+
+@media (max-width: 560px) {
+  .nnn-share-modal {
+    align-items: end;
+    padding: 0.5rem;
+  }
+
+  .nnn-share-dialog {
+    width: 100%;
+    max-height: calc(100vh - 1rem);
+    padding: 1.25rem 1rem 1rem;
+  }
+
+  .nnn-share-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .nnn-share-actions .button {
+    width: 100%;
+    min-height: 3.2rem;
+  }
+}
+
 @media (max-width: 980px) {
   .notice-workbench {
     grid-template-columns: 1fr;

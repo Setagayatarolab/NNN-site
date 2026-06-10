@@ -115,14 +115,6 @@
     return "夜";
   }
 
-  function buildShareUrl(data) {
-    const text = encodeURIComponent(
-      "NNN派遣候補通知を発行しました。お宅の猫はすでに監視任務中かもしれません。 #NNN #猫 #派遣候補通知"
-    );
-    const url = encodeURIComponent(window.location.href.split("#")[0]);
-    return "https://twitter.com/intent/tweet?text=" + text + "&url=" + url;
-  }
-
   function renderNotice(data) {
     resultArea.className = "dispatch-result";
     resultArea.innerHTML =
@@ -169,9 +161,9 @@
       '<div class="dispatch-actions">' +
         '<button class="button secondary" type="button" id="reissueNoticeButton">再発行する</button>' +
         '<button class="button secondary save-image-button" type="button" id="saveNoticeImage">通知画像を保存</button>' +
-        '<a class="button primary" target="_blank" rel="noopener" href="' + buildShareUrl(data) + '">Xでシェア</a>' +
+        '<button class="button primary" type="button" id="shareNoticeImage">Xでシェア</button>' +
       "</div>" +
-      '<p class="share-guidance">画像を保存してからX投稿に添付してください</p>' +
+      '<p class="share-guidance">通知画像を保存してから、X投稿画面で添付してください。</p>' +
       '<p id="noticeCaptureStatus" class="capture-status" role="status" aria-live="polite"></p>';
 
     resultArea.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -189,24 +181,176 @@
         saveNoticeImage(data);
       });
     }
+
+    const shareButton = document.getElementById("shareNoticeImage");
+    if (shareButton) {
+      shareButton.addEventListener("click", function () {
+        openNoticeShareModal(data);
+      });
+    }
   }
 
   function saveNoticeImage(data) {
-    const notice = resultArea.querySelector(".dispatch-document");
     const status = document.getElementById("noticeCaptureStatus");
-    if (!window.NNNCapture || !notice) {
-      showCaptureStatus(status, "画像保存の準備に失敗しました。公開ページ上で開いているか確認してください。", true);
-      return;
-    }
-
     errorMessage.textContent = "";
     showCaptureStatus(status, "通知画像を生成しています。少しだけお待ちください。", false);
-    window.NNNCapture.downloadElementAsPng(notice, "nnn-dispatch-notice-" + data.observationNumber + ".png", { pixelRatio: 2 }).then(function () {
+    createNoticeImageBlob(data).then(function (blob) {
+      downloadNoticeBlob(blob, "nnn-dispatch-notice-" + data.observationNumber + ".png");
       showCaptureStatus(status, "通知画像を保存しました。X投稿時に添付してください。", false);
     }).catch(function (error) {
       console.error(error);
       showCaptureStatus(status, "画像保存に失敗しました。公開ページ上で開いているか、画像が正しく読み込まれているか確認してください。", true);
     });
+  }
+
+  function createNoticeImageBlob(data) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1200;
+    canvas.height = 720;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return Promise.reject(new Error("Canvasを初期化できませんでした。"));
+
+    const gradient = ctx.createLinearGradient(0, 0, 1200, 720);
+    gradient.addColorStop(0, "#071333");
+    gradient.addColorStop(0.55, "#17104b");
+    gradient.addColorStop(1, "#09091f");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 1200, 720);
+
+    ctx.strokeStyle = "#f4d992";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(24, 24, 1152, 672);
+    ctx.strokeStyle = "rgba(125,224,255,.28)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(38, 38, 1124, 644);
+
+    ctx.fillStyle = "#7de0ff";
+    ctx.font = "800 20px 'Yu Gothic', Meiryo, sans-serif";
+    ctx.fillText("NNN INTERNAL / CLASSIFIED", 70, 82);
+    ctx.fillStyle = "#fff4ce";
+    ctx.font = "900 48px 'Yu Gothic', Meiryo, sans-serif";
+    ctx.fillText("NNN極秘派遣候補通知書", 70, 140);
+    ctx.fillStyle = "#f4d992";
+    ctx.font = "800 18px 'Yu Gothic', Meiryo, sans-serif";
+    ctx.fillText("OBSERVATION No.  " + data.observationNumber, 760, 95);
+
+    ctx.fillStyle = "rgba(6,10,35,.72)";
+    ctx.fillRect(68, 180, 650, 360);
+    ctx.strokeStyle = "rgba(244,217,146,.4)";
+    ctx.strokeRect(68, 180, 650, 360);
+    ctx.fillStyle = "#fff4ce";
+    ctx.font = "900 32px 'Yu Gothic', Meiryo, sans-serif";
+    ctx.fillText(data.name + " 様", 98, 235);
+    ctx.font = "500 21px 'Yu Gothic', Meiryo, sans-serif";
+    drawWrappedText(ctx, "貴宅は、NNN猫派遣候補地として内部観測網に登録されました。今後、窓辺の視線、玄関先の気配、深夜の猫動画推薦、黒猫との偶発的遭遇に十分ご注意ください。", 98, 290, 580, 38);
+    drawWrappedText(ctx, "正式派遣の可否は、今後の猫親和性と受け入れ体制によって最終決定されます。", 98, 430, 580, 38);
+
+    const rows = [
+      ["派遣候補ランク", data.rank],
+      ["担当部署", data.department],
+      ["派遣予定猫タイプ", data.catType],
+      ["現在の監視段階", data.stage],
+      ["候補地識別コード", data.candidateCode],
+      ["発行日", data.issueDate]
+    ];
+    rows.forEach(function (row, index) {
+      const y = 190 + index * 58;
+      ctx.fillStyle = "rgba(15,22,66,.82)";
+      ctx.fillRect(750, y, 370, 46);
+      ctx.strokeStyle = "rgba(125,224,255,.3)";
+      ctx.strokeRect(750, y, 370, 46);
+      ctx.fillStyle = "#7de0ff";
+      ctx.font = "800 15px 'Yu Gothic', Meiryo, sans-serif";
+      ctx.fillText(row[0], 766, y + 19);
+      ctx.fillStyle = "#fff4ce";
+      ctx.font = "800 18px 'Yu Gothic', Meiryo, sans-serif";
+      ctx.textAlign = "right";
+      ctx.fillText(String(row[1]), 1102, y + 31);
+      ctx.textAlign = "left";
+    });
+
+    ctx.fillStyle = "rgba(244,217,146,.08)";
+    ctx.fillRect(68, 568, 1052, 76);
+    ctx.strokeStyle = "rgba(244,217,146,.3)";
+    ctx.strokeRect(68, 568, 1052, 76);
+    ctx.fillStyle = "#7de0ff";
+    ctx.font = "800 15px 'Yu Gothic', Meiryo, sans-serif";
+    ctx.fillText("INTERNAL COMMENT", 88, 594);
+    ctx.fillStyle = "#fff4ce";
+    ctx.font = "600 20px 'Yu Gothic', Meiryo, sans-serif";
+    ctx.fillText(data.comment, 88, 625);
+
+    ctx.save();
+    ctx.translate(1035, 555);
+    ctx.rotate(-0.13);
+    ctx.strokeStyle = "#ff88ee";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(0, 0, 66, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = "#ffc9f5";
+    ctx.font = "900 18px 'Yu Gothic', Meiryo, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(data.seal, 0, 6);
+    ctx.restore();
+
+    return canvasToBlob(canvas);
+  }
+
+  function openNoticeShareModal(data) {
+    const status = document.getElementById("noticeCaptureStatus");
+    if (!window.NNNShare) {
+      showCaptureStatus(status, "共有画面の準備に失敗しました。ページを再読み込みしてください。", true);
+      return;
+    }
+
+    window.NNNShare.openShareModal({
+      filename: "nnn-dispatch-notice-" + data.observationNumber + ".png",
+      saveButtonLabel: "通知画像を保存",
+      shareText: "NNN派遣候補通知を発行しました。\nお宅はすでに猫派遣候補地として監視されているかもしれません。\n#NNN #猫 #派遣候補通知",
+      savedMessage: "派遣候補通知を保存しました。続けてXの投稿画面を開き、保存した画像を添付してください。",
+      imageGenerator: function () {
+        return createNoticeImageBlob(data);
+      },
+      onStatus: function (message, isError) {
+        showCaptureStatus(status, message, isError);
+      }
+    });
+  }
+
+  function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
+    let line = "";
+    let currentY = y;
+    Array.from(text).forEach(function (character) {
+      const testLine = line + character;
+      if (ctx.measureText(testLine).width > maxWidth && line) {
+        ctx.fillText(line, x, currentY);
+        line = character;
+        currentY += lineHeight;
+      } else {
+        line = testLine;
+      }
+    });
+    if (line) ctx.fillText(line, x, currentY);
+  }
+
+  function canvasToBlob(canvas) {
+    return new Promise(function (resolve, reject) {
+      canvas.toBlob(function (blob) {
+        blob ? resolve(blob) : reject(new Error("通知画像を生成できませんでした。"));
+      }, "image/png");
+    });
+  }
+
+  function downloadNoticeBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = filename;
+    anchor.click();
+    window.setTimeout(function () {
+      URL.revokeObjectURL(url);
+    }, 1000);
   }
 
   function showCaptureStatus(element, message, isError) {

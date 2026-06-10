@@ -158,9 +158,9 @@
       '<div class="dispatch-actions">' +
         '<button class="button secondary" type="button" id="regenerateMemberCard">再生成する</button>' +
         '<button class="button secondary save-image-button" type="button" id="saveMemberCardImage">会員証画像を保存</button>' +
-        '<a class="button primary" target="_blank" rel="noopener" href="' + buildShareUrl() + '">Xでシェア</a>' +
+        '<button class="button primary" type="button" id="shareMemberCard">Xでシェア</button>' +
       "</div>" +
-      '<p class="share-guidance">画像を保存してからX投稿に添付してください</p>' +
+      '<p class="share-guidance">画像を保存してから、X投稿画面で添付してください。</p>' +
       '<p id="memberCaptureStatus" class="capture-status" role="status" aria-live="polite"></p>';
     resultArea.scrollIntoView({ behavior: "smooth", block: "start" });
 
@@ -175,6 +175,13 @@
     if (saveButton) {
       saveButton.addEventListener("click", function () {
         saveMemberCardImage(data);
+      });
+    }
+
+    const shareButton = document.getElementById("shareMemberCard");
+    if (shareButton) {
+      shareButton.addEventListener("click", function () {
+        openMemberShareModal(data);
       });
     }
   }
@@ -193,6 +200,11 @@
   }
 
   async function downloadMemberCardCanvas(data) {
+    const blob = await createMemberCardBlob(data);
+    downloadBlob(blob, "nnn-member-card-" + data.memberId + ".png");
+  }
+
+  async function createMemberCardBlob(data) {
     const canvas = document.createElement("canvas");
     canvas.width = 1200;
     canvas.height = 720;
@@ -210,8 +222,7 @@
     drawCanvasAuthStrip(ctx, data);
     drawCanvasFooter(ctx, data);
 
-    const blob = await canvasToPngBlob(canvas);
-    downloadBlob(blob, "nnn-member-card-" + data.memberId + ".png");
+    return canvasToPngBlob(canvas);
   }
 
   function canvasToPngBlob(canvas) {
@@ -590,10 +601,25 @@
     element.classList.toggle("is-error", Boolean(isError));
   }
 
-  function buildShareUrl() {
-    const text = encodeURIComponent("NNN極秘会員証を発行しました。あなたの猫は監視対象かもしれません。 #NNN #猫 #会員証メーカー");
-    const url = encodeURIComponent(window.location.href.split("#")[0]);
-    return "https://twitter.com/intent/tweet?text=" + text + "&url=" + url;
+  function openMemberShareModal(data) {
+    const status = document.getElementById("memberCaptureStatus");
+    if (!window.NNNShare) {
+      showCaptureStatus(status, "共有画面の準備に失敗しました。ページを再読み込みしてください。", true);
+      return;
+    }
+
+    window.NNNShare.openShareModal({
+      filename: "nnn-member-card-" + data.memberId + ".png",
+      saveButtonLabel: "会員証画像を保存",
+      shareText: "NNN極秘会員証を発行しました。\nあなたの猫は、すでにNNNの監視網に登録されているかもしれません。\n#NNN #猫 #会員証メーカー",
+      savedMessage: "会員証画像を保存しました。続けてXの投稿画面を開き、保存した画像を添付してください。",
+      imageGenerator: function () {
+        return createMemberCardBlob(data);
+      },
+      onStatus: function (message, isError) {
+        showCaptureStatus(status, message, isError);
+      }
+    });
   }
 
   function getInheritedValue(key) {

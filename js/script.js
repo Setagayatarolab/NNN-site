@@ -78,6 +78,7 @@
 
   var diagnosisForm = document.getElementById("diagnosisForm");
   var diagnosisResult = document.getElementById("diagnosisResult");
+  var currentDiagnosisShareData = null;
 
   var resultMessages = [
     {
@@ -128,10 +129,185 @@
     });
   }
 
-  function buildShareUrl(text) {
-    var url = window.location.href.split("#")[0];
-    var shareText = encodeURIComponent(text + " #NNNロックオン診断");
-    return "https://twitter.com/intent/tweet?text=" + shareText + "&url=" + encodeURIComponent(url);
+  function createDiagnosisImageBlob() {
+    if (!currentDiagnosisShareData) return Promise.reject(new Error("診断結果がありません。"));
+
+    var canvas = document.createElement("canvas");
+    canvas.width = 1200;
+    canvas.height = 720;
+    var ctx = canvas.getContext("2d");
+    if (!ctx) return Promise.reject(new Error("Canvasを初期化できませんでした。"));
+
+    var gradient = ctx.createLinearGradient(0, 0, 1200, 720);
+    gradient.addColorStop(0, "#0b1c50");
+    gradient.addColorStop(0.52, "#17104e");
+    gradient.addColorStop(1, "#070d25");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 1200, 720);
+    ctx.strokeStyle = "#f4d992";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(24, 24, 1152, 672);
+    ctx.strokeStyle = "rgba(125,224,255,.3)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(38, 38, 1124, 644);
+
+    ctx.fillStyle = "#7de0ff";
+    ctx.font = "800 20px 'Yu Gothic', Meiryo, sans-serif";
+    ctx.fillText("NNN SURVEILLANCE REPORT", 70, 78);
+    ctx.fillStyle = "#fff4ce";
+    ctx.font = "900 50px 'Yu Gothic', Meiryo, sans-serif";
+    ctx.fillText("NNN監視判定報告書", 70, 140);
+    ctx.fillStyle = "#f4d992";
+    ctx.font = "800 17px 'Yu Gothic', Meiryo, sans-serif";
+    ctx.fillText("CLASSIFIED RESULT / NNN INTERNAL DOSSIER", 70, 177);
+
+    ctx.fillStyle = "rgba(7,13,45,.76)";
+    ctx.fillRect(68, 215, 680, 310);
+    ctx.strokeStyle = "rgba(244,217,146,.38)";
+    ctx.strokeRect(68, 215, 680, 310);
+    ctx.fillStyle = "#7de0ff";
+    ctx.font = "900 22px 'Yu Gothic', Meiryo, sans-serif";
+    ctx.fillText("● " + currentDiagnosisShareData.code, 96, 260);
+    ctx.fillStyle = "#fff4ce";
+    ctx.font = "900 48px 'Yu Gothic', Meiryo, sans-serif";
+    ctx.fillText(currentDiagnosisShareData.title, 96, 330);
+    ctx.font = "500 22px 'Yu Gothic', Meiryo, sans-serif";
+    drawDiagnosisWrappedText(ctx, currentDiagnosisShareData.text, 96, 385, 610, 39);
+
+    var stats = [
+      ["チェック数", currentDiagnosisShareData.count + " / 8"],
+      ["ロックオン度", currentDiagnosisShareData.level],
+      ["ステータス", currentDiagnosisShareData.status]
+    ];
+    stats.forEach(function (row, index) {
+      var y = 220 + index * 96;
+      ctx.fillStyle = "rgba(17,24,67,.84)";
+      ctx.fillRect(780, y, 340, 74);
+      ctx.strokeStyle = "rgba(244,217,146,.35)";
+      ctx.strokeRect(780, y, 340, 74);
+      ctx.fillStyle = "#7de0ff";
+      ctx.font = "800 16px 'Yu Gothic', Meiryo, sans-serif";
+      ctx.fillText(row[0], 800, y + 25);
+      ctx.fillStyle = "#f4d992";
+      ctx.font = "900 26px 'Yu Gothic', Meiryo, sans-serif";
+      ctx.fillText(String(row[1]), 800, y + 57);
+    });
+
+    ctx.fillStyle = "rgba(4,8,28,.8)";
+    ctx.fillRect(780, 512, 340, 104);
+    ctx.fillStyle = "#7de0ff";
+    ctx.font = "800 15px 'Yu Gothic', Meiryo, sans-serif";
+    ctx.fillText("LOCK-ON METER", 800, 540);
+    ctx.fillStyle = "rgba(255,255,255,.12)";
+    ctx.fillRect(800, 558, 290, 18);
+    var meter = ctx.createLinearGradient(800, 0, 1090, 0);
+    meter.addColorStop(0, "#7de0ff");
+    meter.addColorStop(0.55, "#c477ff");
+    meter.addColorStop(1, "#f4d992");
+    ctx.fillStyle = meter;
+    ctx.fillRect(800, 558, 290 * currentDiagnosisShareData.percent / 100, 18);
+    ctx.fillStyle = "#fff4ce";
+    ctx.font = "900 22px 'Yu Gothic', Meiryo, sans-serif";
+    ctx.fillText(currentDiagnosisShareData.percent + "%", 800, 607);
+
+    ctx.save();
+    ctx.translate(1000, 135);
+    ctx.rotate(-0.12);
+    ctx.strokeStyle = "#ff88ee";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(-92, -28, 184, 56);
+    ctx.fillStyle = "#ffc9f5";
+    ctx.font = "900 21px 'Yu Gothic', Meiryo, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("TOP SECRET", 0, 8);
+    ctx.restore();
+
+    return loadDiagnosisKitten().then(function (image) {
+      ctx.save();
+      ctx.globalAlpha = 0.42;
+      ctx.drawImage(image, 1010, 485, 150, 190);
+      ctx.restore();
+      return diagnosisCanvasToBlob(canvas);
+    }).catch(function () {
+      return diagnosisCanvasToBlob(canvas);
+    });
+  }
+
+  function loadDiagnosisKitten() {
+    return new Promise(function (resolve, reject) {
+      var image = new Image();
+      image.onload = function () { resolve(image); };
+      image.onerror = reject;
+      image.src = "images/result-kitten.png";
+    });
+  }
+
+  function diagnosisCanvasToBlob(canvas) {
+    return new Promise(function (resolve, reject) {
+      canvas.toBlob(function (blob) {
+        blob ? resolve(blob) : reject(new Error("診断結果画像を生成できませんでした。"));
+      }, "image/png");
+    });
+  }
+
+  function drawDiagnosisWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
+    var line = "";
+    var currentY = y;
+    Array.from(text).forEach(function (character) {
+      var testLine = line + character;
+      if (ctx.measureText(testLine).width > maxWidth && line) {
+        ctx.fillText(line, x, currentY);
+        line = character;
+        currentY += lineHeight;
+      } else {
+        line = testLine;
+      }
+    });
+    if (line) ctx.fillText(line, x, currentY);
+  }
+
+  function downloadDiagnosisBlob(blob, filename) {
+    var url = URL.createObjectURL(blob);
+    var anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = filename;
+    anchor.click();
+    window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  function showDiagnosisShareStatus(message, isError) {
+    var status = document.getElementById("diagnosisCaptureStatus");
+    if (!status) return;
+    status.textContent = message;
+    status.classList.toggle("is-error", Boolean(isError));
+  }
+
+  function saveDiagnosisImage() {
+    showDiagnosisShareStatus("診断結果画像を生成しています。", false);
+    createDiagnosisImageBlob()
+      .then(function (blob) {
+        downloadDiagnosisBlob(blob, "nnn-lock-on-result.png");
+        showDiagnosisShareStatus("診断結果画像を保存しました。X投稿時に添付してください。", false);
+      })
+      .catch(function (error) {
+        console.error(error);
+        showDiagnosisShareStatus("診断結果画像の保存に失敗しました。もう一度お試しください。", true);
+      });
+  }
+
+  function openDiagnosisShareModal() {
+    if (!window.NNNShare) {
+      showDiagnosisShareStatus("共有画面の準備に失敗しました。ページを再読み込みしてください。", true);
+      return;
+    }
+    window.NNNShare.openShareModal({
+      filename: "nnn-lock-on-result.png",
+      saveButtonLabel: "診断結果画像を保存",
+      shareText: "NNNロックオン診断の結果が出ました。\n猫たちの監視網に、すでに捕捉されているかもしれません。\n#NNN #猫 #ロックオン診断",
+      savedMessage: "診断結果画像を保存しました。続けてXの投稿画面を開き、保存した画像を添付してください。",
+      imageGenerator: createDiagnosisImageBlob,
+      onStatus: showDiagnosisShareStatus
+    });
   }
 
   if (diagnosisForm && diagnosisResult) {
@@ -139,8 +315,16 @@
       event.preventDefault();
       var checkedCount = diagnosisForm.querySelectorAll("input[name='sign']:checked").length;
       var result = findResult(checkedCount);
-      var shareSentence = "NNNロックオン診断の結果は「" + result.title + "」でした。チェック数は" + checkedCount + "個。";
       var lockPercent = Math.round((checkedCount / 8) * 100);
+      currentDiagnosisShareData = {
+        title: result.title,
+        code: result.code,
+        status: result.status,
+        level: result.level,
+        text: result.text,
+        count: checkedCount,
+        percent: lockPercent
+      };
 
       diagnosisResult.className = "result-card diagnosis-result result-" + result.className;
       diagnosisResult.style.setProperty("--lock-percent", lockPercent + "%");
@@ -162,12 +346,21 @@
         "</dl>" +
         "</div>" +
         '<div class="share-actions">' +
-        '<a class="button primary" target="_blank" rel="noopener" href="' + buildShareUrl(shareSentence) + '">Xでシェアする</a>' +
+        '<button class="button secondary" type="button" id="saveDiagnosisImage">診断結果画像を保存</button>' +
+        '<button class="button primary" type="button" id="shareDiagnosisResult">Xでシェアする</button>' +
         '<a class="button secondary" href="notice.html">派遣候補通知メーカーへ</a>' +
-        "</div>";
+        "</div>" +
+        '<p class="share-guidance">診断結果画像を保存してから、X投稿画面で添付してください。</p>' +
+        '<p id="diagnosisCaptureStatus" class="capture-status" role="status" aria-live="polite"></p>';
 
       diagnosisResult.classList.remove("hidden");
       diagnosisResult.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      var saveDiagnosisButton = document.getElementById("saveDiagnosisImage");
+      if (saveDiagnosisButton) saveDiagnosisButton.addEventListener("click", saveDiagnosisImage);
+
+      var shareDiagnosisButton = document.getElementById("shareDiagnosisResult");
+      if (shareDiagnosisButton) shareDiagnosisButton.addEventListener("click", openDiagnosisShareModal);
     });
   }
 
