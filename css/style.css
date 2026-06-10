@@ -5347,25 +5347,34 @@ input[type="checkbox"] {
 .membership-page .member-photo {
   position: relative;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   min-height: 0;
   aspect-ratio: 16 / 10;
   max-height: 16.5rem;
+  padding: 0.7rem;
   border-color: rgba(244, 217, 146, 0.58);
   background:
     linear-gradient(135deg, rgba(125, 224, 255, 0.08), rgba(244, 217, 146, 0.08)),
-    rgba(5, 8, 30, 0.8);
+    radial-gradient(circle at center, rgba(75, 59, 137, 0.16), transparent 68%),
+    #070b1f;
   box-shadow:
     inset 0 0 22px rgba(0, 0, 0, 0.24),
     0 0 18px rgba(125, 224, 255, 0.1);
+  box-sizing: border-box;
 }
 
 .membership-page .member-photo img {
   width: 100%;
   height: 100%;
   min-height: 0;
-  object-fit: cover;
-  object-position: center;
+  object-fit: contain;
+  object-position: center center;
+  display: block;
+  border-radius: 0.35rem;
+  background: #070b1f;
 }
 
 .membership-page .member-photo::before {
@@ -5477,8 +5486,8 @@ input[type="checkbox"] {
 
 .photo-auth {
   position: absolute;
-  left: 0.8rem;
-  bottom: 0.8rem;
+  left: 1.15rem;
+  bottom: 1.15rem;
   z-index: 2;
   padding: 0.25rem 0.55rem;
   border: 1px solid rgba(125, 224, 255, 0.48);
