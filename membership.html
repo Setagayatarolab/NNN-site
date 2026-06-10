@@ -56,7 +56,7 @@
         </div>
 
         <label class="upload-zone compact-upload" for="memberPhoto">
-          <input id="memberPhoto" name="photo" type="file" accept="image/*">
+          <input id="memberPhoto" name="photo" type="file" accept="image/*" required aria-describedby="memberError">
           <span class="upload-copy">
             <strong>猫写真を登録</strong>
             <small>会員証写真に使用</small>
@@ -67,11 +67,11 @@
         <div class="tool-field-grid">
           <label class="field-block" for="memberCatName">
             <span>猫の名前 <b>必須</b></span>
-            <input id="memberCatName" type="text" maxlength="24" placeholder="例）ミケ" required>
+            <input id="memberCatName" type="text" maxlength="24" placeholder="例）ミケ" required aria-describedby="memberError">
           </label>
           <label class="field-block" for="memberCatAge">
             <span>猫の年齢 <b>必須</b></span>
-            <input id="memberCatAge" type="number" min="0" max="30" step="0.1" placeholder="例）3" required>
+            <input id="memberCatAge" type="number" min="0" max="30" step="0.1" placeholder="例）3" required aria-describedby="memberError">
           </label>
         </div>
 
@@ -91,6 +91,6 @@
   </footer>
 
   <script src="js/script.js?v=20260604"></script>
-  <script src="js/membership.js?v=20260609-canvas2"></script>
+  <script src="js/membership.js?v=20260610-required-fields"></script>
 </body>
 </html>

@@ -8,6 +8,7 @@
   const ageInput = document.getElementById("memberCatAge");
   const errorMessage = document.getElementById("memberError");
   const resultArea = document.getElementById("memberCardResult");
+  const photoField = photoInput ? photoInput.closest(".upload-zone") : null;
 
   const teams = ["深夜巡回班", "窓辺監視班", "屋上観測班", "月光追尾班", "肉球通信課", "黒猫特務班"];
   const codeNames = ["MOON-07", "SHADOW-12", "SOFTPAW-4", "WATCHER-9", "WINDOW-03", "ROOF-21", "LUNA-07", "NOIR-11", "WATCHER-09", "MOON-04"];
@@ -15,6 +16,7 @@
   const approvalSeals = ["VERIFIED", "APPROVED", "NNN承認", "極秘認証"];
   let inheritedData = loadInheritedData();
   let currentPhoto = inheritedData.photo || "";
+  let validationAttempted = false;
 
   function getRandomItem(list) {
     return list[Math.floor(Math.random() * list.length)];
@@ -94,8 +96,8 @@
 
     return {
       photo: photoData || currentPhoto,
-      catName: nameInput.value.trim(),
-      catAge: ageInput.value.trim(),
+      catName: getMemberNameValue(),
+      catAge: getMemberAgeValue(),
       memberId: getRandomMemberId(),
       codeName: getRandomCodeName(),
       team: getRandomTeam(),
@@ -335,11 +337,11 @@
     roundedStroke(ctx, x + 12, y + 12, width - 24, height - 24, 12, "rgba(244,217,146,0.22)", 1);
 
     if (previewImage && previewImage.complete && previewImage.naturalWidth > 0) {
-      drawImageCover(ctx, previewImage, x + 14, y + 14, width - 28, height - 28);
+      drawImageContain(ctx, previewImage, x + 14, y + 14, width - 28, height - 28);
     } else if (src) {
       try {
         const image = await loadCanvasImage(src);
-        drawImageCover(ctx, image, x + 14, y + 14, width - 28, height - 28);
+        drawImageContain(ctx, image, x + 14, y + 14, width - 28, height - 28);
       } catch (error) {
         drawPhotoPlaceholder(ctx, x, y, width, height, catName);
       }
@@ -546,26 +548,27 @@
     });
   }
 
-  function drawImageCover(ctx, image, x, y, width, height) {
-    const sourceRatio = image.width / image.height;
-    const targetRatio = width / height;
-    let sourceWidth = image.width;
-    let sourceHeight = image.height;
-    let sourceX = 0;
-    let sourceY = 0;
+  function drawImageContain(ctx, image, x, y, boxWidth, boxHeight) {
+    const sourceWidth = image.naturalWidth || image.videoWidth || image.width;
+    const sourceHeight = image.naturalHeight || image.videoHeight || image.height;
 
-    if (sourceRatio > targetRatio) {
-      sourceWidth = image.height * targetRatio;
-      sourceX = (image.width - sourceWidth) / 2;
-    } else {
-      sourceHeight = image.width / targetRatio;
-      sourceY = (image.height - sourceHeight) / 2;
+    if (!sourceWidth || !sourceHeight) {
+      throw new Error("猫写真のサイズを取得できませんでした。");
     }
 
+    const fitScale = Math.min(boxWidth / sourceWidth, boxHeight / sourceHeight);
+    const scale = Math.min(fitScale, 2);
+    const drawWidth = Math.max(1, sourceWidth * scale);
+    const drawHeight = Math.max(1, sourceHeight * scale);
+    const drawX = x + (boxWidth - drawWidth) / 2;
+    const drawY = y + (boxHeight - drawHeight) / 2;
+
     ctx.save();
-    roundRectPath(ctx, x, y, width, height, 12);
+    roundRectPath(ctx, x, y, boxWidth, boxHeight, 12);
     ctx.clip();
-    ctx.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, x, y, width, height);
+    ctx.fillStyle = "#070b1f";
+    ctx.fillRect(x, y, boxWidth, boxHeight);
+    ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
     ctx.restore();
   }
 
@@ -593,19 +596,117 @@
     return "https://twitter.com/intent/tweet?text=" + text + "&url=" + url;
   }
 
-  function validateForm() {
-    if (!nameInput.value.trim()) {
-      errorMessage.textContent = "猫の名前を入力してください。";
-      nameInput.focus();
-      return false;
+  function getInheritedValue(key) {
+    const value = inheritedData[key];
+    return value === undefined || value === null ? "" : String(value).trim();
+  }
+
+  function getMemberNameValue() {
+    const inputValue = nameInput ? nameInput.value.trim() : "";
+    return inputValue || getInheritedValue("catName");
+  }
+
+  function getMemberAgeValue() {
+    const inputValue = ageInput ? ageInput.value.trim() : "";
+    return inputValue || getInheritedValue("catAge");
+  }
+
+  function hasMemberPhoto() {
+    const hasUploadedFile = Boolean(
+      photoInput &&
+      photoInput.files &&
+      photoInput.files.length > 0
+    );
+    const hasCurrentPhoto = typeof currentPhoto === "string" && currentPhoto.trim() !== "";
+    const inheritedPhoto = getInheritedValue("photo");
+
+    return hasUploadedFile || hasCurrentPhoto || inheritedPhoto !== "";
+  }
+
+  function hasMemberName() {
+    return getMemberNameValue() !== "";
+  }
+
+  function hasMemberAge() {
+    const ageValue = getMemberAgeValue();
+    if (ageValue === "") return false;
+
+    const numericAge = Number(ageValue);
+    return Number.isFinite(numericAge) && numericAge >= 0;
+  }
+
+  function setFieldError(field, input, hasError) {
+    if (field) field.classList.toggle("is-error", hasError);
+    if (input) {
+      input.classList.toggle("is-error", hasError);
+      input.setAttribute("aria-invalid", hasError ? "true" : "false");
     }
-    if (!ageInput.value.trim()) {
-      errorMessage.textContent = "猫の年齢を入力してください。";
-      ageInput.focus();
-      return false;
+  }
+
+  function renderMemberErrors(errors) {
+    if (!errorMessage) return;
+
+    errorMessage.replaceChildren();
+    if (errors.length === 0) return;
+
+    const heading = document.createElement("span");
+    heading.className = "member-error-heading";
+    heading.textContent = "NNN認証端末が未登録項目を検出しました。";
+
+    const list = document.createElement("ul");
+    list.className = "member-error-list";
+    errors.forEach(function (error) {
+      const item = document.createElement("li");
+      item.textContent = error.message;
+      list.appendChild(item);
+    });
+
+    errorMessage.append(heading, list);
+  }
+
+  function focusFirstMemberError(error) {
+    if (!error) return;
+
+    if (error.type === "photo" && photoField) {
+      photoField.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (photoInput) photoInput.focus({ preventScroll: true });
+      return;
     }
-    errorMessage.textContent = "";
-    return true;
+
+    const input = error.type === "name" ? nameInput : ageInput;
+    if (input) {
+      input.scrollIntoView({ behavior: "smooth", block: "center" });
+      input.focus({ preventScroll: true });
+    }
+  }
+
+  function validateMemberForm(options) {
+    const settings = options || {};
+    const errors = [];
+    const photoMissing = !hasMemberPhoto();
+    const nameMissing = !hasMemberName();
+    const ageMissing = !hasMemberAge();
+
+    if (photoMissing) {
+      errors.push({ type: "photo", message: "猫写真を登録してください。" });
+    }
+    if (nameMissing) {
+      errors.push({ type: "name", message: "猫の名前を入力してください。" });
+    }
+    if (ageMissing) {
+      errors.push({ type: "age", message: "猫の年齢を入力してください。" });
+    }
+
+    setFieldError(photoField, photoInput, photoMissing);
+    setFieldError(null, nameInput, nameMissing);
+    setFieldError(null, ageInput, ageMissing);
+    renderMemberErrors(errors);
+
+    if (settings.focusFirst !== false && errors.length > 0) {
+      focusFirstMemberError(errors[0]);
+    }
+
+    return errors;
   }
 
   function escapeHtml(value) {
@@ -617,20 +718,30 @@
       .replace(/'/g, "&#039;");
   }
 
-  if (inheritedData.catName) nameInput.value = inheritedData.catName;
-  if (inheritedData.catAge) ageInput.value = inheritedData.catAge;
+  if (getInheritedValue("catName")) nameInput.value = inheritedData.catName;
+  if (getInheritedValue("catAge")) ageInput.value = inheritedData.catAge;
   if (currentPhoto) setPreview(currentPhoto);
 
   if (photoInput) {
     photoInput.addEventListener("change", function () {
-      previewUploadedCatImage(photoInput.files[0], function () {});
+      previewUploadedCatImage(photoInput.files[0], function () {
+        if (validationAttempted) validateMemberForm({ focusFirst: false });
+      });
     });
   }
+
+  [nameInput, ageInput].forEach(function (input) {
+    if (!input) return;
+    input.addEventListener("input", function () {
+      if (validationAttempted) validateMemberForm({ focusFirst: false });
+    });
+  });
 
   if (form) {
     form.addEventListener("submit", function (event) {
       event.preventDefault();
-      if (!validateForm()) return;
+      validationAttempted = true;
+      if (validateMemberForm().length > 0) return;
 
       previewUploadedCatImage(photoInput.files[0], function (photoData) {
         renderMemberCard(generateMemberCard(photoData));
